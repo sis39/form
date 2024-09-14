@@ -66,7 +66,23 @@ app.delete('/users/:id', async (req, res) => {
         res.status(500).json({ message: 'Error deleting user', error });
     }
 });
+app.put('/api/users/:id', async (req, res) => {
+    const userId = req.params.id; // Get the userId from URL parameters
+    const updatedData = req.body; // Get the updated data from the request body
 
+    try {
+        const updatedUser = await User.findByIdAndUpdate(userId, updatedData, {
+            new: true, // Return the updated document
+            runValidators: true, // Validate data against the schema
+        });
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json({ message: 'User updated successfully', updatedUser });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating user', error });
+    }
+});
 
 // Server Listening
 app.listen(PORT, () => {
